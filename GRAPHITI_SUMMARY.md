@@ -2,7 +2,7 @@
 
 ## 🎯 What Was Done
 
-Successfully integrated **Graphiti** (temporal knowledge graph) into RAGFlow Slim Graphs, creating a hybrid RAG system that combines:
+Successfully integrated **Graphiti** (temporal knowledge graph) into RAGFlow Slim with Graphiti Integration, creating a hybrid RAG system that combines:
 
 1. **Vector Search** (Supabase) - Fast similarity-based retrieval
 2. **Knowledge Graph** (Neo4j + Graphiti) - Entity/relationship extraction with temporal tracking
@@ -38,7 +38,7 @@ Successfully integrated **Graphiti** (temporal knowledge graph) into RAGFlow Sli
 ```
 Documents
     ↓
-RAGFlow Slim Graphs API
+RAGFlow Slim with Graphiti Integration API
     ├─→ Supabase (Vector Store)
     │   └─→ Fast similarity search
     │
@@ -50,7 +50,7 @@ RAGFlow Slim Graphs API
 
 ### Environment Variables Added
 ```bash
-NEO4J_URI=bolt://ragflow-slim-graphs-neo4j:7687
+NEO4J_URI=bolt://ragflow-neo4j:7687
 NEO4J_USER=neo4j
 NEO4J_PASSWORD=graphiti_password
 GRAPHITI_LLM_PROVIDER=openai
@@ -58,7 +58,7 @@ OPENAI_API_KEY=sk-your-key-here
 ```
 
 ### Docker Services Added
-- **ragflow-slim-graphs-neo4j**: Neo4j 5.15.0 with APOC plugin
+- **ragflow-neo4j**: Neo4j 5.18.0 with APOC plugin
   - HTTP: port 7474 (Browser UI)
   - Bolt: port 7687 (Database connection)
   - Memory: 2GB heap (configurable)
@@ -146,7 +146,7 @@ LLM-powered extraction of:
 
 ## 🎉 Summary
 
-RAGFlow Slim Graphs now offers:
+RAGFlow Slim with Graphiti Integration now offers:
 - ✅ Vector similarity search (existing)
 - ✅ Knowledge graph search (new)
 - ✅ Temporal tracking (new)

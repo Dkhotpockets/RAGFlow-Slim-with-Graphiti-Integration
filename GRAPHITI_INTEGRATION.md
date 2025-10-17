@@ -73,9 +73,9 @@ docker-compose up -d
 
 This will start:
 
-- **ragflow-slim-graphs-server** (Flask API on port 5000)
-- **ragflow-slim-graphs-neo4j** (Neo4j on ports 7474/7687)
-- **ragflow-slim-graphs-mysql**, **ragflow-slim-graphs-redis**, **ragflow-slim-graphs-minio**, **ragflow-slim-graphs-es-01**
+- **ragflow-server** (Flask API on port 5000)
+- **ragflow-neo4j** (Neo4j on ports 7474/7687)
+- **ragflow-mysql**, **ragflow-redis**, **ragflow-minio**, **ragflow-es-01**
 
 ### 4. Verify Neo4j is Running
 

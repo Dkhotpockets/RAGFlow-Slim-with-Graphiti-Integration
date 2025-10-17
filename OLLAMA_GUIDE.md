@@ -1,4 +1,4 @@
-# Using Ollama with RAGFlow Slim Graphs
+# Using Ollama with RAGFlow Slim with Graphiti Integration
 
 ## Why Ollama?
 
@@ -51,7 +51,7 @@ Verify it's running:
 ollama list
 ```
 
-### 4. Configure RAGFlow Slim Graphs to Use Ollama
+### 4. Configure RAGFlow Slim with Graphiti Integration to Use Ollama
 
 **Option A: Set environment variable (recommended)**
 ```powershell
@@ -60,7 +60,7 @@ $env:LLM_PROVIDER = "ollama"
 
 **Option B: Use auto-detection**
 ```powershell
-# RAGFlow Slim Graphs will automatically detect Ollama if running
+# RAGFlow Slim with Graphiti Integration will automatically detect Ollama if running
 $env:LLM_PROVIDER = "auto"
 ```
 
@@ -114,12 +114,12 @@ Total: ~5GB RAM
 
 ## Docker Setup
 
-### Running Ollama Alongside RAGFlow Slim Graphs
+### Running Ollama Alongside RAGFlow Slim with Graphiti Integration
 
 **Option 1: Ollama on Host (Recommended for Development)**
 
 ```yaml
-# docker-compose.yml - RAGFlow Slim Graphs can access host Ollama
+# docker-compose.yml - RAGFlow Slim with Graphiti Integration can access host Ollama
 environment:
   - LLM_PROVIDER=ollama
   - OLLAMA_HOST=http://host.docker.internal:11434
@@ -137,7 +137,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     
-  ragflow-slim-graphs-server:
+  ragflow-server:
     environment:
       - LLM_PROVIDER=ollama
       - OLLAMA_HOST=http://ollama:11434
@@ -154,7 +154,7 @@ docker exec -it ollama ollama pull nomic-embed-text
 
 ## Performance Comparison
 
-### RAGFlow Slim Graphs Operations Cost/Speed
+### RAGFlow Slim with Graphiti Integration Operations Cost/Speed
 
 | Operation | OpenAI (Cost) | Google AI (Cost) | Ollama (Speed) |
 |-----------|---------------|------------------|----------------|
@@ -173,7 +173,7 @@ docker exec -it ollama ollama pull nomic-embed-text
 
 ## Multi-App Deployment Strategy
 
-### Scenario: Multiple Apps Using RAGFlow Slim Graphs
+### Scenario: Multiple Apps Using RAGFlow Slim with Graphiti Integration
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -188,7 +188,7 @@ docker exec -it ollama ollama pull nomic-embed-text
 │         └─────────┬───────────┘                     │
 │                   │                                  │
 │         ┌─────────▼──────────┐                      │
-│         │   RAGFlow Slim Graphs     │                      │
+│         │   RAGFlow Slim with Graphiti Integration     │                      │
 │         │   (Multi-Provider) │                      │
 │         └─────────┬──────────┘                      │
 │                   │                                  │
@@ -307,4 +307,4 @@ LLM_PROVIDER=auto
 - **Ollama Website**: https://ollama.ai
 - **Model Library**: https://ollama.ai/library
 - **Ollama GitHub**: https://github.com/ollama/ollama
-- **RAGFlow Slim Graphs Docs**: See `GRAPHITI_INTEGRATION.md`
+- **RAGFlow Slim with Graphiti Integration Docs**: See `GRAPHITI_INTEGRATION.md`

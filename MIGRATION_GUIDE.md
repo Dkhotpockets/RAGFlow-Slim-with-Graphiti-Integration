@@ -1,10 +1,10 @@
-# Migration Guide: Adding Graphiti to Existing RAGFlow Slim Graphs
+# Migration Guide: Adding Graphiti to Existing RAGFlow Slim with Graphiti Integration
 
-If you have an existing RAGFlow Slim Graphs installation, follow these steps to add Graphiti support.
+If you have an existing RAGFlow Slim with Graphiti Integration installation, follow these steps to add Graphiti support.
 
 ## Prerequisites
 
-- Existing RAGFlow Slim Graphs installation
+- Existing RAGFlow Slim with Graphiti Integration installation
 - Docker and Docker Compose
 - OpenAI API key (for entity extraction)
 
@@ -38,9 +38,9 @@ pip install -r requirements.txt
 Add to your `docker-compose.yml` services section:
 
 ```yaml
-  ragflow-slim-graphs-neo4j:
+  ragflow-neo4j:
     image: neo4j:5.15.0
-    container_name: ragflow-slim-graphs-neo4j
+    container_name: ragflow-neo4j
     restart: unless-stopped
     environment:
       - NEO4J_AUTH=neo4j/graphiti_password
@@ -62,16 +62,16 @@ volumes:
   neo4j-logs:
 ```
 
-Update `ragflow-slim-graphs-server` service to depend on Neo4j:
+Update `ragflow-server` service to depend on Neo4j:
 ```yaml
-  ragflow-slim-graphs-server:
+  ragflow-server:
     # ... existing config ...
     depends_on:
       # ... existing dependencies ...
-      - ragflow-slim-graphs-neo4j
+      - ragflow-neo4j
     environment:
       # ... existing env vars ...
-      - NEO4J_URI=bolt://ragflow-slim-graphs-neo4j:7687
+      - NEO4J_URI=bolt://ragflow-neo4j:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=graphiti_password
       - GRAPHITI_LLM_PROVIDER=openai
@@ -166,8 +166,8 @@ docker-compose down
 docker-compose up -d
 
 # Check logs
-docker-compose logs -f ragflow-slim-graphs-neo4j
-docker-compose logs -f ragflow-slim-graphs-server
+docker-compose logs -f ragflow-neo4j
+docker-compose logs -f ragflow-server
 ```
 
 ### Step 8: Verify Installation
@@ -226,7 +226,7 @@ pip install graphiti-core neo4j
 **Solution:**
 ```bash
 # Check logs
-docker logs ragflow-slim-graphs-neo4j
+docker logs ragflow-neo4j
 
 # Common fix: Remove existing data
 docker-compose down -v

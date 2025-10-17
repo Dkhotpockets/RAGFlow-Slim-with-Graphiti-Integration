@@ -2,7 +2,7 @@
 
 ## Overview
 
-RAGFlow Slim Graphs now supports **three LLM providers** with automatic detection:
+RAGFlow Slim with Graphiti Integration now supports **three LLM providers** with automatic detection:
 
 | Provider | Cost | Speed | Privacy | Use Case |
 |----------|------|-------|---------|----------|
@@ -15,7 +15,7 @@ RAGFlow Slim Graphs now supports **three LLM providers** with automatic detectio
 ### 1. Set Provider (Auto-Detection)
 
 ```powershell
-# Let RAGFlow Slim Graphs auto-detect (recommended)
+# Let RAGFlow Slim with Graphiti Integration auto-detect (recommended)
 $env:LLM_PROVIDER = "auto"
 
 # Or specify explicitly
@@ -176,7 +176,7 @@ LLM_PROVIDER=google
 GOOGLE_API_KEY=AIzaSy...your-key
 ```
 
-**Local RAGFlow Slim Graphs (Development with Ollama):**
+**Local RAGFlow Slim with Graphiti Integration (Development with Ollama):**
 ```powershell
 LLM_PROVIDER=ollama
 ```
@@ -198,7 +198,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
 
-  ragflow-slim-graphs-server:
+  ragflow-server:
     environment:
       - LLM_PROVIDER=ollama
       - OLLAMA_HOST=http://ollama:11434
@@ -228,7 +228,7 @@ $env:LLM_PROVIDER = "ollama"  # Switch back to free
 
 ```yaml
 services:
-  ragflow-slim-graphs-server:
+  ragflow-server:
     environment:
       # Auto-detect (recommended)
       - LLM_PROVIDER=auto
@@ -284,7 +284,7 @@ GET /health
   "llm_provider": "ollama",
   "llm_model": "llama3.2",
   "embeddings_model": "nomic-embed-text",
-  "neo4j_uri": "bolt://ragflow-slim-graphs-neo4j:7687",
+  "neo4j_uri": "bolt://ragflow-neo4j:7687",
   "supabase_configured": true,
   "timestamp": "2025-10-16T18:30:00"
 }
@@ -341,7 +341,7 @@ ollama pull nomic-embed-text
 ```yaml
 # Add to docker-compose.yml
 services:
-  ragflow-slim-graphs-server:
+  ragflow-server:
     environment:
       - OLLAMA_HOST=http://host.docker.internal:11434
     extra_hosts:
@@ -427,4 +427,4 @@ $env:LLM_PROVIDER = "ollama"
 - **Ollama Setup**: `OLLAMA_GUIDE.md`
 - **Google AI**: https://makersuite.google.com/
 - **OpenAI**: https://platform.openai.com/
-- **RAGFlow Slim Graphs Docs**: `GRAPHITI_INTEGRATION.md`
+- **RAGFlow Slim with Graphiti Integration Docs**: `GRAPHITI_INTEGRATION.md`

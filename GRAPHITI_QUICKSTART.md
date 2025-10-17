@@ -2,7 +2,7 @@
 
 ## What's New?
 
-Your RAGFlow Slim Graphs project now has **temporal knowledge graph** capabilities powered by [Graphiti](https://github.com/getzep/graphiti)! 🎉
+Your RAGFlow Slim with Graphiti Integration project now has **temporal knowledge graph** capabilities powered by [Graphiti](https://github.com/getzep/graphiti)! 🎉
 
 ### Before (Vector-only RAG):
 
@@ -159,7 +159,7 @@ MATCH (n) RETURN n LIMIT 25
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              RAGFlow Slim Graphs API                   │
+│              RAGFlow Slim with Graphiti Integration API                   │
 │  ┌──────────────────┬──────────────────────┐   │
 │  │   Supabase       │      Graphiti        │   │
 │  │  (Vector Store)  │   (Knowledge Graph)  │   │

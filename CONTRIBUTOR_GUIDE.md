@@ -1,8 +1,8 @@
-# Ragflow Slim Graphs Contributor Guide
+# RAGFlow Slim with Graphiti Integration Contributor Guide
 
 ## Purpose
 
-Ragflow Slim Graphs is a modular, contributor-safe RAG backend for document ingestion, retrieval, and context-aware LLM responses. It is designed for commercial integration, auditability, and onboarding.
+RAGFlow Slim with Graphiti Integration is a modular, contributor-safe RAG backend for document ingestion, retrieval, and context-aware LLM responses. It is designed for commercial integration, auditability, and onboarding.
 
 ## Getting Started
 
