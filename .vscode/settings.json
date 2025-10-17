@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "supabase/migrations/*.sql": "postgres"
+  },
+  "mssql.enabled": false
+}

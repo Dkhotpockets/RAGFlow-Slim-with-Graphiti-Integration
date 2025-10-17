@@ -1,0 +1,4 @@
+  File "/mnt/c/Users/compl/ragflow-slim/app.py", line 1
+    = [f"Mock result {i+1} for query: {query}" for i in range(top_k)]\n    log_output(f"retrieval_{timestamp}.json", json.dumps(results, indent=2))\n    return jsonify({"results": results})\n\nif __name__ == "__main__":\n    app.run(debug=True)
+                                             ^
+SyntaxError: unexpected character after line continuation character

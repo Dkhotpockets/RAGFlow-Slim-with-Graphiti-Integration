@@ -1,0 +1,39 @@
+# AI Assistant Rules and Guidelines
+
+## Todo List Management
+
+**REQUIRED**: Always maintain an active todo list for any multi-step operations or write actions. The system requires a todoList parameter for write operations to ensure proper task tracking and planning.
+
+### When to Use Todo Lists
+
+- Before making any file modifications
+- When performing multi-step tasks
+- For any complex operations requiring planning
+- When the system indicates "todoList is required for write operation"
+
+### Todo List Best Practices
+
+- Create specific, actionable items
+- Mark items as "in-progress" when starting work
+- Mark items as "completed" immediately after finishing
+- Include clear descriptions and acceptance criteria
+- Keep todo lists focused and minimal (3-7 items max)
+
+## Code Quality Standards
+
+- Fix all linting errors before completing tasks
+- Follow project-specific coding conventions
+- Ensure proper error handling and validation
+- Test changes when possible
+
+## Documentation Updates
+
+- Keep all documentation synchronized with code changes
+- Fix markdown linting issues immediately
+- Maintain consistent naming and terminology
+
+## Error Handling
+
+- Investigate root causes of errors thoroughly
+- Provide clear explanations of fixes
+- Prevent similar errors through proper validation

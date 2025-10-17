@@ -1,0 +1,2 @@
+-- SQL initialization script for ragflow-mysql
+-- Add your schema and seed data here

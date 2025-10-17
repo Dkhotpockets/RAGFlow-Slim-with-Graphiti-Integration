@@ -1,0 +1,10 @@
+flask
+werkzeug
+PyPDF2
+requests
+supabase
+graphiti-core
+neo4j
+flask-cors
+google-generativeai
+google-genai

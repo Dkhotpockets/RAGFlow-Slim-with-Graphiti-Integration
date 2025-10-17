@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ragflow Slim Web UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    section { margin-bottom: 2em; }
+    label { font-weight: bold; }
+    input, textarea, button { margin: 0.5em 0; }
+    .result { background: #f4f4f4; padding: 1em; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Ragflow Slim Web UI</h1>
+
+  <!-- Completion Section -->
+  <section>
+    <h2>Completion</h2>
+    <form id="completionForm">
+      <label for="prompt">Prompt:</label><br>
+      <textarea id="prompt" rows="3" cols="50" placeholder="Enter your prompt"></textarea><br>
+      <label for="model">Model (optional):</label><br>
+      <input id="model" type="text" placeholder="Model name"><br>
+      <button type="submit">Submit</button>
+    </form>
+    <div id="completionResult" class="result"></div>
+  </section>
+
+  <!-- Ingest Section -->
+  <section>
+    <h2>Ingest Document</h2>
+    <form id="ingestForm" enctype="multipart/form-data">
+      <label for="fileInput">Choose document (txt or PDF):</label><br>
+      <input id="fileInput" type="file" title="Upload document" placeholder="Select file"><br>
+      <button type="submit">Upload</button>
+    </form>
+    <div id="ingestResult" class="result"></div>
+  </section>
+
+  <!-- Retrieval Section -->
+  <section>
+    <h2>Retrieval</h2>
+    <form id="retrievalForm">
+      <label for="query">Query:</label><br>
+      <input id="query" type="text" placeholder="Enter your query"><br>
+      <label for="topK">Top K:</label><br>
+      <input id="topK" type="number" value="3" min="1"><br>
+      <button type="submit">Search</button>
+    </form>
+    <div id="retrievalResult" class="result"></div>
+  </section>
+
+  <script>
+    // Completion
+    document.getElementById('completionForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      const model = document.getElementById('model').value;
+      const res = await fetch('http://localhost:5000/completion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, model })
+      });
+      const data = await res.json();
+      document.getElementById('completionResult').textContent = data.response || JSON.stringify(data);
+    };
+
+    // Ingest
+    document.getElementById('ingestForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        document.getElementById('ingestResult').textContent = "Please select a file.";
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      const res = await fetch('http://localhost:5000/ingest', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      document.getElementById('ingestResult').textContent = data.status ? `Status: ${data.status}` : JSON.stringify(data);
+    };
+
+    // Retrieval
+    document.getElementById('retrievalForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const query = document.getElementById('query').value;
+      const top_k = parseInt(document.getElementById('topK').value, 10);
+      const res = await fetch('http://localhost:5000/retrieval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, top_k, metadata: {} })
+      });
+      const data = await res.json();
+      if (Array.isArray(data.results)) {
+        document.getElementById('retrievalResult').innerHTML = data.results.map(
+          r => `<div><b>${r.filename}</b>: ${r.snippet}</div>`
+        ).join('');
+      } else {
+        document.getElementById('retrievalResult').textContent = JSON.stringify(data);
+      }
+    };
+  </script>
+</body>
+</html>

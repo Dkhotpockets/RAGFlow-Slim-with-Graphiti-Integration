@@ -1,0 +1,1 @@
+Mock response from llama2 for prompt: Hello, Derek

@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "Ragflow Slim API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Completion",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"prompt\": \"Hello, world!\",\n  \"model\": \"default\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/completion",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["completion"]
+        }
+      }
+    },
+    {
+      "name": "Ingest Document",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file" }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:5000/ingest",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["ingest"]
+        }
+      }
+    },
+    {
+      "name": "Retrieval",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"example\",\n  \"top_k\": 3,\n  \"metadata\": {}\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/retrieval",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["retrieval"]
+        }
+      }
+    }
+  ]
+}

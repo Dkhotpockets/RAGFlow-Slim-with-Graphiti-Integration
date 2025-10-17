@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  title: Ragflow Slim API
+  version: 1.0.0
+  description: Contributor-safe, modular RAG backend for document ingestion and retrieval
+servers:
+  - url: http://localhost:5000
+paths:
+  /completion:
+    post:
+      summary: Generate LLM completion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                model:
+                  type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+  /ingest:
+    post:
+      summary: Ingest a document (txt or PDF)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  response:
+                    type: object
+  /retrieval:
+    post:
+      summary: Retrieve relevant documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                top_k:
+                  type: integer
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        doc_id:
+                          type: string
+                        filename:
+                          type: string
+                        snippet:
+                          type: string
