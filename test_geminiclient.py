@@ -2,6 +2,7 @@
 import os
 import sys
 import logging
+import pytest
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -34,10 +35,16 @@ try:
     print(f"   ✅ GeminiClient created: {client}")
     print("   SUCCESS!")
     
+except ModuleNotFoundError as e:
+    # Optional dependency missing; instruct pytest to skip module collection
+    print(f"   ⚠️ Optional dependency missing: {e}. Skipping GeminiClient initialization tests.")
+    pytest.skip(f"Optional dependency missing: {e}", allow_module_level=True)
+
 except Exception as e:
     print(f"   ❌ Error: {type(e).__name__}")
     print(f"   Message: {e}")
     import traceback
     print("\n   Full traceback:")
     traceback.print_exc()
-    sys.exit(1)
+    # Non-module errors are still fatal for this script
+    pytest.fail(f"GeminiClient initialization failed with exception: {e}")

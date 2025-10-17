@@ -1,15 +1,22 @@
 # RAGFlow Slim with Graphiti Integration
 
-A lightweight, hybrid RAG (Retrieval-Augmented Generation) system that combines vector search with temporal knowledge graphs for enhanced document understanding and retrieval.
+A lightweight, hybrid RAG (Retrieval-Augmented Generation) system that combines
+vector search with temporal knowledge graphs for enhanced document
+understanding and retrieval.
 
 ## 🎯 Overview
 
-RAGFlow Slim with Graphiti Integration is a streamlined version of RAGFlow that integrates Graphiti's temporal knowledge graph capabilities. This hybrid system provides:
+RAGFlow Slim with Graphiti Integration is a streamlined version of RAGFlow that
+integrates Graphiti's temporal knowledge graph capabilities. This hybrid system
+provides:
 
 - **Vector Search**: Fast similarity-based document retrieval using Supabase
-- **Knowledge Graph**: Entity extraction, relationship mapping, and temporal tracking using Neo4j + Graphiti
-- **Multi-Provider LLM Support**: Google Gemini, Ollama, and other providers
-- **RESTful API**: Clean endpoints for document ingestion, retrieval, and graph queries
+- **Knowledge Graph**: Entity extraction, relationship mapping, and temporal
+   tracking using Neo4j + Graphiti
+- **Multi-Provider LLM Support**: Google Gemini, Ollama, and other
+   providers
+- **RESTful API**: Clean endpoints for document ingestion, retrieval, and graph
+   queries
 
 ## 🚀 Quick Start
 
@@ -179,6 +186,25 @@ Run the test suite:
 python -m pytest test_*.py
 ```
 
+### Running contract/integration tests (CI)
+
+Contract and integration tests that hit external services (Graphiti, Supabase,
+LLM providers) are run conditionally in CI.
+
+- Locally: run all tests including contract-marked ones:
+
+```powershell
+# Run contract/integration tests locally
+pytest -q -m contract
+```
+
+- On GitHub Actions: trigger the `CI` workflow with `workflow_dispatch` and set
+   the `run_contracts` input to `true` when you want the contract suite.
+
+This avoids running long or environment-dependent tests on every push while
+allowing a dedicated contract test run when desired.
+
+
 ### Adding New Features
 
 1. Create a feature branch
@@ -197,7 +223,8 @@ python -m pytest test_*.py
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributor Guide](CONTRIBUTOR_GUIDE.md) for details on:
+We welcome contributions!
+See the [Contributor Guide](CONTRIBUTOR_GUIDE.md) for details on:
 
 - Setting up a development environment
 - Code standards and practices

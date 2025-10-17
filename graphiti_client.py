@@ -51,10 +51,10 @@ NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "graphiti_password")
 
 # Global Graphiti instance (initialized lazily)
-_graphiti_instance: Optional[Graphiti] = None
+_graphiti_instance: Optional[Any] = None
 
 
-def get_graphiti_client() -> Optional[Graphiti]:
+def get_graphiti_client() -> Optional[Any]:
     """Get or create the global Graphiti client instance with multi-provider LLM support."""
     print("🔍 get_graphiti_client() called")  # Debug print
     global _graphiti_instance

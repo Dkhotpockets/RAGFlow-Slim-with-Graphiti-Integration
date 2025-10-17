@@ -30,6 +30,23 @@ services:
       - OLLAMA_HOST=http://host.docker.internal:11434
       - OLLAMA_MODEL=qwen2.5-coder:3b
       - OLLAMA_EMBED_MODEL=nomic-embed-text
+      # Crawl4AI Configuration
+      - CRAWL4AI_ENABLED=true
+      - CRAWL4AI_MAX_CONCURRENT_JOBS=5
+      - CRAWL4AI_JOB_TIMEOUT_SECONDS=300
+      - CRAWL4AI_MAX_RETRIES=3
+      - CRAWL4AI_DEFAULT_MAX_DEPTH=1
+      - CRAWL4AI_DEFAULT_TIMEOUT_SECONDS=30
+      - CRAWL4AI_DEFAULT_MAX_CONTENT_SIZE=5242880
+      - CRAWL4AI_DEFAULT_RESPECT_ROBOTS=true
+      - CRAWL4AI_DEFAULT_FOLLOW_REDIRECTS=true
+      - CRAWL4AI_DEFAULT_EXTRACT_METADATA=true
+      - CRAWL4AI_USER_AGENT=RAGFlow-Crawler/1.0
+      - CRAWL4AI_MIN_CONTENT_LENGTH=100
+      - CRAWL4AI_MAX_CONTENT_LENGTH=10485760
+      - CRAWL4AI_SUPPORTED_CONTENT_TYPES=text/html,application/xhtml+xml,text/plain
+      - CRAWL4AI_RATE_LIMIT_PER_MINUTE=60
+      - CRAWL4AI_RATE_LIMIT_BURST=10
     extra_hosts:
       - "host.docker.internal:host-gateway"  # For accessing host Ollama on Linux
 

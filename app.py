@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os, datetime, json, logging
+import os, datetime, json, logging, asyncio
 from werkzeug.exceptions import BadRequest
 
 
@@ -19,6 +19,12 @@ from graphiti_client import (
     get_temporal_context,
     GRAPHITI_AVAILABLE
 )
+from crawl4ai_source import (
+    CrawlJobManager,
+    CrawlJobRequest,
+    CrawlJobResponse,
+    CrawlStatus
+)
 # - Output folder is consistent for audit and onboarding
 # - Logging is enabled for production safety
 
@@ -26,6 +32,10 @@ app = Flask(__name__)
 CORS(app)
 OUTPUT_DIR = os.path.join(os.getcwd(), "outputs")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Initialize CrawlJobManager with Supabase client
+from supabase_client import supabase as supabase_client
+crawl_manager = CrawlJobManager(supabase_client)
 
 # Configuration directory for bootstrap files (can be mounted as a Docker volume)
 # Default is /data/application but can be overridden with the RAGFLOW_CONFIG_DIR env var.
@@ -179,6 +189,7 @@ def health_check():
         "embeddings_model": provider_info.get("embeddings_model", "unknown"),
         "neo4j_uri": os.getenv("NEO4J_URI", "not configured"),
         "supabase_configured": bool(os.getenv("SUPABASE_URL")),
+        "crawl4ai_available": True,  # Crawl4AI is now integrated
         "timestamp": datetime.datetime.now().isoformat()
     })
 
@@ -463,6 +474,142 @@ def graph_temporal():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logging.error(f"Internal error: {e}")
+        return jsonify({"error": "Internal server error."}), 500
+
+
+@app.route("/crawl", methods=["POST"])
+def create_crawl_job():
+    """Create a new crawl job for web content extraction."""
+    if not authenticate():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not rate_limit():
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    try:
+        data = request.get_json(force=True)
+        crawl_request = CrawlJobRequest.from_dict(data)
+
+        # Create the job
+        job = asyncio.run(crawl_manager.create_job(crawl_request.url, crawl_request.to_config()))
+
+        response = CrawlJobResponse.from_job(job)
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_output(f"crawl_job_created_{timestamp}.json", json.dumps({
+            "job_id": job.id,
+            "url": job.url,
+            "config": job.config.to_dict()
+        }, indent=2))
+
+        logging.info(f"Created crawl job {job.id} for URL: {job.url}")
+        return jsonify(response.__dict__), 201
+
+    except BadRequest as e:
+        logging.warning(f"Bad request: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logging.error(f"Internal error creating crawl job: {e}")
+        return jsonify({"error": "Internal server error."}), 500
+
+
+@app.route("/crawl/<job_id>", methods=["GET"])
+def get_crawl_job(job_id: str):
+    """Get the status and results of a crawl job."""
+    if not authenticate():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not rate_limit():
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    try:
+        job = asyncio.run(crawl_manager.get_job(job_id))
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+
+        response = CrawlJobResponse.from_job(job)
+        return jsonify(response.__dict__)
+
+    except Exception as e:
+        logging.error(f"Internal error retrieving crawl job {job_id}: {e}")
+        return jsonify({"error": "Internal server error."}), 500
+
+
+@app.route("/crawl", methods=["GET"])
+def list_crawl_jobs():
+    """List crawl jobs with optional filtering."""
+    if not authenticate():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not rate_limit():
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    try:
+        status_filter = request.args.get("status")
+        limit = int(request.args.get("limit", 50))
+
+        if limit < 1 or limit > 100:
+            raise BadRequest("limit must be between 1 and 100.")
+
+        status = None
+        if status_filter:
+            try:
+                status = CrawlStatus(status_filter.lower())
+            except ValueError:
+                raise BadRequest(f"Invalid status: {status_filter}. Must be one of: {[s.value for s in CrawlStatus]}")
+
+        jobs = asyncio.run(crawl_manager.list_jobs(status=status, limit=limit))
+        responses = [CrawlJobResponse.from_job(job).__dict__ for job in jobs]
+
+        return jsonify({
+            "jobs": responses,
+            "count": len(responses)
+        })
+
+    except BadRequest as e:
+        logging.warning(f"Bad request: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logging.error(f"Internal error listing crawl jobs: {e}")
+        return jsonify({"error": "Internal server error."}), 500
+
+
+@app.route("/crawl/<job_id>/start", methods=["POST"])
+def start_crawl_job(job_id: str):
+    """Start execution of a pending crawl job."""
+    if not authenticate():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not rate_limit():
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    try:
+        success = asyncio.run(crawl_manager.start_job(job_id))
+        if not success:
+            return jsonify({"error": "Failed to start job. It may not exist or not be in pending status."}), 400
+
+        logging.info(f"Started crawl job {job_id}")
+        return jsonify({"message": f"Job {job_id} started successfully"})
+
+    except Exception as e:
+        logging.error(f"Internal error starting crawl job {job_id}: {e}")
+        return jsonify({"error": "Internal server error."}), 500
+
+
+@app.route("/crawl/<job_id>/cancel", methods=["POST"])
+def cancel_crawl_job(job_id: str):
+    """Cancel a running or pending crawl job."""
+    if not authenticate():
+        return jsonify({"error": "Unauthorized"}), 401
+    if not rate_limit():
+        return jsonify({"error": "Rate limit exceeded"}), 429
+
+    try:
+        success = asyncio.run(crawl_manager.cancel_job(job_id))
+        if not success:
+            return jsonify({"error": "Failed to cancel job. It may not exist or not be cancellable."}), 400
+
+        logging.info(f"Cancelled crawl job {job_id}")
+        return jsonify({"message": f"Job {job_id} cancelled successfully"})
+
+    except Exception as e:
+        logging.error(f"Internal error cancelling crawl job {job_id}: {e}")
         return jsonify({"error": "Internal server error."}), 500
 
 
