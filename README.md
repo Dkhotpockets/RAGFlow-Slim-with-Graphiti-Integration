@@ -31,7 +31,7 @@ provides:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/Dkhotpockets/ragflow-slim-graphs.git
+   git clone https://github.com/Dkhotpockets/RAGFlow-Slim-with-Graphiti-Integration.git
    cd ragflow-slim-graphs
    ```
 
