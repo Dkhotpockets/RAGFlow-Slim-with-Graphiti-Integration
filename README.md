@@ -1,15 +1,16 @@
-# RAGFlow Slim with Graphiti Integration
+# RAGFlow Slim with Graphiti and Crawl4AI Integration
 
 A lightweight, hybrid RAG (Retrieval-Augmented Generation) system that combines
-vector search with temporal knowledge graphs for enhanced document
+web crawling, vector search, and temporal knowledge graphs for enhanced document
 understanding and retrieval.
 
 ## 🎯 Overview
 
-RAGFlow Slim with Graphiti Integration is a streamlined version of RAGFlow that
-integrates Graphiti's temporal knowledge graph capabilities. This hybrid system
+RAGFlow Slim with Graphiti and Crawl4AI Integration is a streamlined version of RAGFlow that
+integrates Graphiti's temporal knowledge graph capabilities and Crawl4AI's web scraping features. This hybrid system
 provides:
 
+- **Web Crawling**: Intelligent web scraping and content extraction using Crawl4AI
 - **Vector Search**: Fast similarity-based document retrieval using Supabase
 - **Knowledge Graph**: Entity extraction, relationship mapping, and temporal
    tracking using Neo4j + Graphiti
@@ -171,6 +172,7 @@ Configure the provider using `LLM_PROVIDER` environment variable.
 ├── graphiti_client.py     # Graphiti integration
 ├── supabase_client.py     # Supabase vector operations
 ├── llm_provider.py        # Multi-provider LLM client
+├── crawl4ai_source/       # Crawl4AI crawling service
 ├── docker-compose.yml     # Service orchestration
 ├── requirements.txt       # Python dependencies
 ├── graphiti_source/       # Graphiti library
