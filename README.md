@@ -1,62 +1,112 @@
 # RAGFlow Slim with Graphiti and Crawl4AI Integration
 
-A lightweight, hybrid RAG (Retrieval-Augmented Generation) system that combines
-web crawling, vector search, and temporal knowledge graphs for enhanced document
-understanding and retrieval.
+A lightweight, hybrid RAG (Retrieval-Augmented Generation) **microservice component** that adds:
+- **Knowledge graph extraction** (temporal entity/relationship tracking)
+- **Web crawling** (intelligent content extraction)
+- **Multi-provider LLM support** (Google Gemini, OpenAI, Ollama)
+
+**Designed to integrate with your existing application** - works with your Supabase instance and adds advanced RAG capabilities.
 
 ## 🎯 Overview
 
-RAGFlow Slim with Graphiti and Crawl4AI Integration is a streamlined version of RAGFlow that
-integrates Graphiti's temporal knowledge graph capabilities and Crawl4AI's web scraping features. This hybrid system
-provides:
+RAGFlow Slim is a **microservice component** designed to enhance your existing application with advanced RAG capabilities. It integrates seamlessly with your Supabase instance and provides:
 
+- **Knowledge Graph**: Entity extraction, relationship mapping, and temporal tracking using Neo4j + Graphiti
 - **Web Crawling**: Intelligent web scraping and content extraction using Crawl4AI
-- **Vector Search**: Fast similarity-based document retrieval using Supabase
-- **Knowledge Graph**: Entity extraction, relationship mapping, and temporal
-   tracking using Neo4j + Graphiti
-- **Multi-Provider LLM Support**: Google Gemini, Ollama, and other
-   providers
-- **RESTful API**: Clean endpoints for document ingestion, retrieval, and graph
-   queries
+- **Vector Search**: Works with your existing Supabase instance for semantic search
+- **Multi-Provider LLM Support**: Google Gemini, OpenAI, Ollama with auto-detection
+- **RESTful API**: Clean endpoints for easy integration into any application
 
-## 🚀 Quick Start
+## 🔌 Integration Patterns
+
+### Option 1: Microservice (Recommended)
+Run RAGFlow Slim as a separate service and call it from your application via REST API.
+
+```
+Your Application → RAGFlow Slim API → Your Supabase + Neo4j
+```
+
+### Option 2: Direct Import
+Import RAGFlow modules directly into your Python application for lower latency.
+
+```python
+from graphiti_client import search_graph, add_episode
+from supabase_client import search_documents_supabase
+```
+
+**See [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) for detailed integration instructions.**
+
+## 🚀 Quick Start for Integration
 
 ### Prerequisites
 
+- Your application with Supabase already configured
 - Docker and Docker Compose
-- Python 3.8+ (for local development)
-- API keys for your preferred LLM providers
+- Python 3.11+ (for local development)
+- API key for your preferred LLM provider (Google Gemini recommended)
 
-### Using Docker Compose
+### Integration Setup
 
-1. **Clone the repository**
+1. **Add RAGFlow Slim to your project**
 
    ```bash
-   git clone https://github.com/Dkhotpockets/RAGFlow-Slim-with-Graphiti-Integration.git
-   cd ragflow-slim-graphs
+   # Option 1: As a Git submodule
+   git submodule add https://github.com/Dkhotpockets/RAGFlow-Slim-with-Graphiti-Integration.git ragflow-slim
+
+   # Option 2: Clone into services directory
+   git clone https://github.com/Dkhotpockets/RAGFlow-Slim-with-Graphiti-Integration.git services/ragflow-slim
    ```
 
-2. **Configure environment variables**
+2. **Configure to use your Supabase**
 
    ```bash
-   # Copy and edit environment variables
+   cd ragflow-slim
    cp .env.example .env
-   # Edit .env with your API keys
    ```
 
-3. **Start the services**
+   Edit `.env`:
+   ```bash
+   # Use YOUR existing Supabase instance
+   SUPABASE_URL=<your-app-supabase-url>
+   SUPABASE_KEY=<your-app-supabase-service-key>
+
+   # RAGFlow-specific configuration
+   NEO4J_PASSWORD=<strong-password>
+   GOOGLE_API_KEY=<your-google-api-key>
+   RAGFLOW_API_KEY=<generate-strong-key>
+   ```
+
+3. **Run the Supabase setup** (one-time)
+
+   Execute `setup_supabase.sql` in your Supabase SQL Editor to create the necessary tables.
+
+4. **Start RAGFlow services**
 
    ```bash
    docker-compose up -d
    ```
 
-4. **Verify the setup**
+5. **Verify integration**
 
    ```bash
    curl http://localhost:5000/health
    ```
 
-The API will be available at `http://localhost:5000`.
+6. **Call from your application**
+
+   ```typescript
+   // In your app
+   const response = await fetch('http://ragflow-server:5000/retrieval', {
+     method: 'POST',
+     headers: {
+       'X-API-KEY': process.env.RAGFLOW_API_KEY,
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({ query: 'your search query' })
+   });
+   ```
+
+**See [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) for complete integration instructions and code examples.**
 
 ### Local Development
 

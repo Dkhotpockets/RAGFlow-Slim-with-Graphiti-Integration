@@ -1,6 +1,5 @@
 # Graphiti integration for Ragflow Slim
 # Temporal knowledge graph client for entity and relationship extraction
-print("📦 graphiti_client module loaded")  # Debug print
 import os
 import asyncio
 import logging
@@ -56,7 +55,7 @@ _graphiti_instance: Optional[Any] = None
 
 def get_graphiti_client() -> Optional[Any]:
     """Get or create the global Graphiti client instance with multi-provider LLM support."""
-    print("🔍 get_graphiti_client() called")  # Debug print
+    logging.debug("get_graphiti_client() called")
     global _graphiti_instance
     
     if _graphiti_instance is not None:
@@ -70,7 +69,7 @@ def get_graphiti_client() -> Optional[Any]:
         # Get LLM configuration
         if LLM_CONFIG_AVAILABLE:
             provider_config = llm_config.get_graphiti_llm_config()
-            logging.info(f"🤖 Initializing Graphiti with {llm_config.provider} provider")
+            logging.info(f"Initializing Graphiti with {llm_config.provider} provider")
             
             # Create LLM client based on provider
             llm_client = None
@@ -80,14 +79,14 @@ def get_graphiti_client() -> Optional[Any]:
             if llm_config.provider == "ollama":
                 # Ollama has compatibility issues with Graphiti's structured outputs
                 # Use OpenAI for LLM (required for entity extraction) and Ollama for embeddings
-                print("⚠️  Graphiti requires OpenAI's structured outputs for entity extraction.")
-                print("⚠️  Using OpenAI for LLM client and Ollama for embedder to minimize costs.")
-                
+                logging.warning("Graphiti requires OpenAI's structured outputs for entity extraction.")
+                logging.info("Using OpenAI for LLM client and Ollama for embedder to minimize costs.")
+
                 # Check if OpenAI key is available
                 openai_key = os.getenv("OPENAI_API_KEY")
-                print(f"OpenAI key present: {bool(openai_key)}")
+                logging.info(f"OpenAI key present: {bool(openai_key)}")
                 if not openai_key:
-                    logging.error("❌ OpenAI API key required for Graphiti LLM client")
+                    logging.error("OpenAI API key required for Graphiti LLM client")
                     llm_client = None
                 else:
                     llm_client_config = LLMConfig(
@@ -106,17 +105,17 @@ def get_graphiti_client() -> Optional[Any]:
                 
             elif llm_config.provider == "google":
                 # Use Google Gemini for LLM client
-                print("🔑 Using Google Gemini for entity extraction and reranking")
-                
+                logging.info("Using Google Gemini for entity extraction and reranking")
+
                 llm_client = None
                 reranker_client = None
-                
+
                 if not GEMINI_AVAILABLE or GeminiClient is None:
-                    logging.error("❌ GeminiClient not available. Try: pip install graphiti-core[google-genai]")
+                    logging.error("GeminiClient not available. Try: pip install graphiti-core[google-genai]")
                 else:
                     google_key = os.getenv("GOOGLE_API_KEY")
                     if not google_key:
-                        logging.error("❌ Google API key required for Gemini LLM client")
+                        logging.error("Google API key required for Gemini LLM client")
                     else:
                         try:
                             llm_client_config = LLMConfig(
@@ -124,9 +123,9 @@ def get_graphiti_client() -> Optional[Any]:
                                 model=os.getenv("GOOGLE_MODEL", "gemini-2.5-flash")  # Cost-effective Gemini model
                             )
                             llm_client = GeminiClient(config=llm_client_config)
-                            print("✅ Gemini client initialized successfully")
+                            logging.info("Gemini client initialized successfully")
                         except Exception as e:
-                            logging.error(f"❌ Failed to initialize Gemini client: {e}")
+                            logging.error(f"Failed to initialize Gemini client: {e}")
                 
                 # Initialize GeminiRerankerClient for cross-encoding
                 if GEMINI_RERANKER_AVAILABLE and GeminiRerankerClient is not None:
@@ -138,12 +137,12 @@ def get_graphiti_client() -> Optional[Any]:
                                 model=os.getenv("GOOGLE_MODEL", "gemini-2.5-flash")
                             )
                             reranker_client = GeminiRerankerClient(config=reranker_config)
-                            print("✅ Gemini reranker client initialized successfully")
+                            logging.info("Gemini reranker client initialized successfully")
                         except Exception as e:
-                            logging.error(f"⚠️  Failed to initialize Gemini reranker client: {e}")
+                            logging.warning(f"Failed to initialize Gemini reranker client: {e}")
                             reranker_client = None
                 else:
-                    logging.warning("⚠️  GeminiRerankerClient not available, falling back to default reranker")
+                    logging.warning("GeminiRerankerClient not available, falling back to default reranker")
                 
                 # Use Ollama for embeddings (optional, can use Google embeddings too)
                 embedder_config = OpenAIEmbedderConfig(
@@ -181,18 +180,18 @@ def get_graphiti_client() -> Optional[Any]:
             _graphiti_instance = Graphiti(**graphiti_kwargs)
         else:
             # Fallback to default OpenAI configuration
-            logging.warning("⚠️  Using default OpenAI configuration")
+            logging.warning("Using default OpenAI configuration")
             _graphiti_instance = Graphiti(
                 uri=NEO4J_URI,
                 user=NEO4J_USER,
                 password=NEO4J_PASSWORD
             )
-        
-        logging.info(f"✅ Graphiti client initialized with Neo4j at {NEO4J_URI}")
-        
+
+        logging.info(f"Graphiti client initialized with Neo4j at {NEO4J_URI}")
+
         # Note: Database schema will be initialized on first episode addition
     except Exception as e:
-        logging.error(f"❌ Failed to initialize Graphiti client: {e}")
+        logging.error(f"Failed to initialize Graphiti client: {e}")
         import traceback
         logging.error(f"Traceback: {traceback.format_exc()}")
         return None
@@ -224,12 +223,12 @@ async def add_episode_async(
     
     try:
         # Initialize database schema on first use (idempotent operation)
-        print("🔧 Attempting to initialize Graphiti database schema...")
+        logging.info("Attempting to initialize Graphiti database schema...")
         try:
             await client.build_indices_and_constraints()
-            print("✅ Graphiti database schema initialized")
+            logging.info("Graphiti database schema initialized")
         except Exception as schema_e:
-            print(f"⚠️  Schema initialization failed (may already exist): {schema_e}")
+            logging.warning(f"Schema initialization failed (may already exist): {schema_e}")
         
         # Add episode to graph
         await client.add_episode(

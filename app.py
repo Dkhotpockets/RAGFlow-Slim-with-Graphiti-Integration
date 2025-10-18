@@ -225,7 +225,21 @@ def get_embedding_ollama(text, model="nomic-embed-text"):
         return [hash(word) % 1000 for word in text.lower().split()][:128]
 
 
-API_KEY = os.getenv("RAGFLOW_API_KEY", "changeme")
+# API Key configuration - REQUIRED in production
+FLASK_ENV = os.getenv("FLASK_ENV", "development")
+API_KEY = os.getenv("RAGFLOW_API_KEY")
+
+if API_KEY is None:
+    if FLASK_ENV == "production":
+        logging.error("RAGFLOW_API_KEY environment variable is required in production mode")
+        raise RuntimeError("RAGFLOW_API_KEY must be set in production. Check your .env file.")
+    else:
+        # Allow development mode with warning
+        logging.warning("RAGFLOW_API_KEY not set. Using default 'changeme' for development only.")
+        API_KEY = "changeme"
+elif API_KEY == "changeme":
+    logging.warning("Using default API key 'changeme'. This is insecure for production!")
+
 RATE_LIMIT = 100  # requests per hour per IP
 rate_limit_store = {}
 

@@ -1,0 +1,58 @@
+name: Security Check
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety bandit
+
+      - name: Check for known vulnerabilities in dependencies
+        run: |
+          # Check requirements.txt for known vulnerabilities
+          safety check --file=requirements.txt --output=text || true
+
+      - name: Run Bandit security linter
+        run: |
+          # Scan Python code for security issues
+          bandit -r . -f json -o bandit-report.json || true
+          bandit -r . -f text
+
+      - name: Check for secrets in code
+        run: |
+          # Check for potential hardcoded secrets (basic check)
+          echo "Checking for hardcoded secrets..."
+          if grep -r "sk-[a-zA-Z0-9]\{40,\}" . --exclude-dir=.git --exclude="*.md"; then
+            echo "ERROR: Found potential OpenAI API key in code!"
+            exit 1
+          fi
+          if grep -r "AIza[0-9A-Za-z-_]\{35\}" . --exclude-dir=.git --exclude="*.md" --exclude="*.yml"; then
+            echo "WARNING: Found potential Google API key pattern"
+            # Don't fail on this as it might be in examples
+          fi
+          echo "No obvious hardcoded secrets found"
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
